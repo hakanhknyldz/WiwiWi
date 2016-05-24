@@ -1,6 +1,8 @@
 package wiwiwi.io.wearwithweather;
 
 import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -27,6 +29,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import java.util.Calendar;
+
 import it.neokree.materialtabs.MaterialTab;
 import it.neokree.materialtabs.MaterialTabHost;
 import it.neokree.materialtabs.MaterialTabListener;
@@ -35,6 +39,7 @@ import wiwiwi.io.wearwithweather.fragments.FragmentProfile;
 import wiwiwi.io.wearwithweather.fragments.FragmentWear;
 import wiwiwi.io.wearwithweather.fragments.FragmentWeather;
 import wiwiwi.io.wearwithweather.network.VolleyApplication;
+import wiwiwi.io.wearwithweather.network.wiAlarmReceiver;
 import wiwiwi.io.wearwithweather.network.wiService;
 
 
@@ -50,6 +55,8 @@ public class MainActivity extends AppCompatActivity implements MaterialTabListen
     private static final String TAG_SORT_NAME = "sortName";
     private static final String TAG_SORT_DATE = "sortDate";
     private static final String TAG_SORT_RATINGS = "sortRatings";
+    final int MORNING_FILTER = 1111;
+    final int NIGHT_FILTER = 9999;
 
     private static final long POLL_FREQUENCY = 28800000;
     private Toolbar mToolbar;
@@ -90,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements MaterialTabListen
         double latitude = location.getLatitude();
         double longitude = location.getLongitude();
         currentLocation = latitude+","+longitude;
-        Log.d(TAG,"MainACtivity -> currentLOcation : " + currentLocation);
+        Log.d(TAG, "MainACtivity -> currentLOcation : " + currentLocation);
 
         //wiService start
         Intent serviceStarter = new Intent(getBaseContext(),wiService.class);
@@ -103,6 +110,36 @@ public class MainActivity extends AppCompatActivity implements MaterialTabListen
                                 new IntentFilter("wi.action.getCurrentLocation")
                         );
 
+
+
+
+        //ALARM MANAGER:....
+/*
+        setNotification(8,MORNING_FILTER,"Wi wii wii! Good Morning Service","Sabah oldu. Haydi nasıl giyineceğimize karar verme vakti!");
+        setNotification(18,NIGHT_FILTER , "Wi wii Wiii! Night Service","Akşama hava nasıl mı, haydi görelim :)");
+        setNotification(1,433 , "Wi wii Wiii! Night Service","Akşama hava nasıl mı, haydi görelim :)");
+*/
+
+    }
+
+    private void setNotification(int hours,int requestCode,String title,String description) {
+        Calendar calendar = Calendar.getInstance();
+        // we can set time by open date and time picker dialog
+        calendar.set(Calendar.HOUR_OF_DAY, hours);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+
+
+        Intent myIntent = new Intent(MainActivity.this, wiAlarmReceiver.class);
+        myIntent.putExtra("requestCode",requestCode);
+        myIntent.putExtra("title",title);
+        myIntent.putExtra("description",description);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this,requestCode,myIntent,PendingIntent.FLAG_UPDATE_CURRENT);
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),AlarmManager.INTERVAL_DAY,pendingIntent);
 
     }
 

@@ -36,5 +36,6 @@
         <item>Menu</item>
         <item>Profile</item>
     </string-array>
+    <string name="title_activity_notification_shower">NotificationShower</string>
 
 </resources>
