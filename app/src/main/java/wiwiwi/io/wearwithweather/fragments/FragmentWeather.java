@@ -57,8 +57,8 @@ public class FragmentWeather extends Fragment {
     ArrayList<WeatherResult> weatherArray = null;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "currentLocation";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_CURRENTLOCATION = "currentLocation";
+    private static final String ARG_USERGENDER = "userGender";
     private static final String TAG = "HAKKE";
     Button btnQrReader;
     // TODO: Rename and change types of parameters
@@ -71,11 +71,11 @@ public class FragmentWeather extends Fragment {
     /* these arrays keep clothes objects coming from wiService */
     ArrayList<ArrayList<wiClothes>> wiClothesArrayList = new ArrayList<>();
     private ProgressDialog progressDialog = null;
-    public static FragmentWeather newInstance(String param1, String param2) {
+    public static FragmentWeather newInstance(String currentLocation, String userGender) {
         FragmentWeather fragment = new FragmentWeather();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(ARG_CURRENTLOCATION, currentLocation);
+        args.putString(ARG_USERGENDER, userGender);
         fragment.setArguments(args);
         return fragment;
     }
@@ -90,8 +90,8 @@ public class FragmentWeather extends Fragment {
 
         Log.d(TAG,"FragmentWeather=> onCreate");
         if (getArguments() != null) {
-            currentLocation = getArguments().getString(ARG_PARAM1);
-            userGender = getArguments().getString(ARG_PARAM2);
+            currentLocation = getArguments().getString(ARG_CURRENTLOCATION);
+            userGender = getArguments().getString(ARG_USERGENDER);
 
             Log.d(TAG,"FragmentWeather=> onCreate=> curr Locat:" +currentLocation +" , uGender:" + userGender );
 
@@ -533,6 +533,11 @@ public class FragmentWeather extends Fragment {
                                                                                                         @Override
                                                                                                         public void onErrorResponse(VolleyError error) {
                                                                                                             Log.d(TAG,"thirdFourthRequest => Error => " + error);
+                                                                                                            if(progressDialog.isShowing())
+                                                                                                            {
+                                                                                                                progressDialog.dismiss();
+                                                                                                            }
+                                                                                                            Toast.makeText(getContext(),"Timeout Error! \n Check your internet connection..",Toast.LENGTH_SHORT).show();
 
                                                                                                         }
                                                                                                     }
@@ -582,6 +587,11 @@ public class FragmentWeather extends Fragment {
                                                                                     @Override
                                                                                     public void onErrorResponse(VolleyError error) {
                                                                                         Log.d(TAG,"thirdThirdRequest => Error => " + error);
+                                                                                        if(progressDialog.isShowing())
+                                                                                        {
+                                                                                            progressDialog.dismiss();
+                                                                                        }
+                                                                                        Toast.makeText(getContext(),"Timeout Error! \n Check your internet connection..",Toast.LENGTH_SHORT).show();
 
                                                                                     }
                                                                                 }
@@ -631,6 +641,12 @@ public class FragmentWeather extends Fragment {
                                                                 @Override
                                                                 public void onErrorResponse(VolleyError error) {
                                                                     Log.d(TAG,"thirdSecondRequest => Error => " + error);
+                                                                    if(progressDialog.isShowing())
+                                                                    {
+                                                                        progressDialog.dismiss();
+                                                                    }
+                                                                    Toast.makeText(getContext(),"Timeout Error! \n Check your internet connection..",Toast.LENGTH_SHORT).show();
+
                                                                 }
                                                             }){
                                                         @Override
@@ -679,6 +695,12 @@ public class FragmentWeather extends Fragment {
                                     @Override
                                     public void onErrorResponse(VolleyError error) {
                                         Log.d(TAG,"thirdFirstRequest => Error => " + error);
+                                        if(progressDialog.isShowing())
+                                        {
+                                            progressDialog.dismiss();
+                                        }
+                                        Toast.makeText(getContext(),"Timeout Error! \n Check your internet connection..",Toast.LENGTH_SHORT).show();
+
                                     }
                                 }){
                                     @Override

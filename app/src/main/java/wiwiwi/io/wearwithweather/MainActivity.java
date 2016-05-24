@@ -42,9 +42,10 @@ public class MainActivity extends AppCompatActivity implements MaterialTabListen
     private static final String TAG = "HAKKE";
     VolleyApplication volleyApplication;
     public static final int TAB_HOME = 0;
-    public static final int TAB_MENU = 1;
-    public static final int TAB_USER = 2;
+    public static final int TAB_USER = 1;
+    public static final int TAB_MENU = 2;
     public static final int TAB_COUNT = 3;
+
     private static final int JOB_ID = 100;
     private static final String TAG_SORT_NAME = "sortName";
     private static final String TAG_SORT_DATE = "sortDate";
@@ -205,8 +206,9 @@ public class MainActivity extends AppCompatActivity implements MaterialTabListen
     private class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
         int icons[] = {R.drawable.ic_action_sun,
-                R.drawable.ic_action_tshirt,
-                R.drawable.ic_action_user_white};
+                R.drawable.ic_action_user_white,
+                R.drawable.ic_action_tshirt
+                };
 
         FragmentManager fragmentManager;
 
@@ -221,12 +223,13 @@ public class MainActivity extends AppCompatActivity implements MaterialTabListen
                 case TAB_HOME:
                     fragment = FragmentWeather.newInstance(currentLocation, userGender);
                     break;
-                case TAB_MENU:
-                    fragment = FragmentWear.newInstance("", "");
-                    break;
                 case TAB_USER:
                     fragment = FragmentProfile.newInstance("", "");
                     break;
+                case TAB_MENU:
+                    fragment = FragmentWear.newInstance(userGender,"");
+                    break;
+
             }
             return fragment;
 

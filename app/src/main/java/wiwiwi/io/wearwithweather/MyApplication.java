@@ -7,6 +7,13 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 
+import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+
 public class MyApplication extends Application {
     public static final String PREF_FILE_NAME = "WWW_SHARED_PREFERENCES";
     private static MyApplication sInstance;
@@ -15,6 +22,23 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         sInstance = this;
+
+        // UNIVERSAL IMAGE LOADER SETUP
+        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
+                .cacheOnDisc(true).cacheInMemory(true)
+                .imageScaleType(ImageScaleType.EXACTLY)
+                .displayer(new FadeInBitmapDisplayer(300)).build();
+
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
+                getApplicationContext())
+                .defaultDisplayImageOptions(defaultOptions)
+                .memoryCache(new WeakMemoryCache())
+                .discCacheSize(100 * 1024 * 1024).build();
+
+        ImageLoader.getInstance().init(config);
+        // END - UNIVERSAL IMAGE LOADER SETUP
+
+
     }
 
     public static MyApplication getInstance(){
@@ -72,7 +96,11 @@ public class MyApplication extends Application {
     private static final String Register_Service = "http://wiwiwi.somee.com/wiConsole.asmx/wiRegister";
     private static final String User_Details_Service = "http://wiwiwi.somee.com/wiConsole.asmx/wiGetUserDetails";
     private static final String Get_Clothes_Service = "http://wiwiwi.somee.com/wiConsole.asmx/wiGetClothes";
+    private static final String All_Clothes_Service = "http://wiwiwi.somee.com/wiConsole.asmx/wiGetAllClothes";
 
+    public static String getAll_Clothes_Service() {
+        return All_Clothes_Service;
+    }
 
     public static String getLogin_Service_Tag() {
         return Login_Service;
