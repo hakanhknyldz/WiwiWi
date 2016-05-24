@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#2196F3</color>
+    <color name="colorPrimaryDark">#1976D2</color>
+    <color name="colorAccent">#4CAF50</color>
+
+
+    <!-- LOGIN COLORS -->
+    <color name="primary">#673AB7</color>
+    <color name="primary_dark">#512DA8</color>
+    <color name="primary_darker">#4527A0</color>
+    <color name="accent">#FFFFFF</color>
+
+    <color name="black">#000000</color>
+    <color name="jet">#222222</color>
+    <color name="oil">#333333</color>
+    <color name="monsoon">#777777</color>
+    <color name="jumbo">#888888</color>
+    <color name="aluminum">#999999</color>
+    <color name="base">#AAAAAA</color>
+    <color name="iron">#CCCCCC</color>
+    <color name="white">#FFFFFF</color>
+    <color name="colorHighlight">#B6B6B6</color>
+    <color name="colorSecondaryText">#727272</color>
+    <color name="colorPrimaryText">#212121</color>
+    <color name="indigo">#3F51B5</color>
+    <color name="red">#F00</color>
+    <color name="productDetailsColor">#9FA8DA</color>
+    <color name="costumProductMenu">#1976D2</color>
+    <color name="colorContinue">#00E676</color>
+</resources>

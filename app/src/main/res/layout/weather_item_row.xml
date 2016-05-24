@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:custom="http://schemas.android.com/tools"
+    card_view:cardCornerRadius="5dp"
+    android:layout_margin="5dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+        <TextView
+            android:id="@+id/tv_wi_Date"
+            android:layout_margin="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="CURRENT TIME"
+            />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.github.pwittchen.weathericonview.WeatherIconView
+                android:id="@+id/weatherIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                card_view:weatherIconResource="@string/wi_wu_sunny"
+                card_view:weatherIconSize="80"
+                card_view:weatherIconColor="@color/black"
+                
+               />
+            <TextView
+                android:textSize="20dp"
+                android:id="@+id/tv_wi_Temp"
+                android:padding="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TEMP"
+                />
+        </LinearLayout>
+            <TextView
+                android:id="@+id/tv_wi_Title"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="TITLE"
+                android:textSize="14dp"
+                />
+
+        <TextView
+            android:id="@+id/tv_wi_Descripton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="DESCRIPTION"
+            android:textSize="12dp"
+            />
+
+        <ImageView
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/image_default"
+            android:id="@+id/iv_ClothesImage"
+            android:layout_gravity="center_horizontal" />
+
+    </LinearLayout>
+
+
+</android.support.v7.widget.CardView>
