@@ -19,6 +19,11 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.google.gson.Gson;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,6 +32,7 @@ import wiwiwi.io.wearwithweather.MainActivity;
 import wiwiwi.io.wearwithweather.MyApplication;
 import wiwiwi.io.wearwithweather.R;
 import wiwiwi.io.wearwithweather.network.VolleyApplication;
+import wiwiwi.io.wearwithweather.pojo.UserDetails;
 
 public class SignupActivity extends AppCompatActivity {
     private static final String TAG = "HAKKE";
@@ -35,7 +41,7 @@ public class SignupActivity extends AppCompatActivity {
     Button btnSignup;
     TextView tvLinkLogin;
     RadioGroup rgGender;
-
+    String name,surname,password,username;
     int year_x, month_x, day_x;
     static final int DIALOG_ID = 0;
     Context context;
@@ -90,10 +96,10 @@ public class SignupActivity extends AppCompatActivity {
 
         btnSignup.setEnabled(false);
 
-        final String name = etName.getText().toString();
-        final String surname = etSurname.getText().toString();
-        final String username = etEmail.getText().toString();
-        final String password = etPassword.getText().toString();
+        name = etName.getText().toString();
+        surname = etSurname.getText().toString();
+        username = etEmail.getText().toString();
+        password = etPassword.getText().toString();
         int gender = 1;
         int selectedId = rgGender.getCheckedRadioButtonId();
         if (selectedId == rbMale.getId()) {
@@ -144,14 +150,82 @@ public class SignupActivity extends AppCompatActivity {
                 {
                     Toast.makeText(context, "You registered successfully!", Toast.LENGTH_LONG).show();
                     Log.d(TAG, "SignupActivity => signup() - Signup Success!");
-                    MyApplication.saveToPreferences(context, "logged_in", true);
-                    MyApplication.saveToPreferences(context, "username", etEmail.getText().toString());
-                    //MyApplication.saveToPreferences(context, "userID", result);
-                    //Log.d(TAG, "  Registered User ID is : " +  MyApplication.readFromPreferences(context,"userID", -1));
-                    Intent intent = new Intent(SignupActivity.this, MainActivity.class);
-                    //MyApplication.createBundleSendingEmail(email, intent);
-                    startActivity(intent);
-                    onSignupSuccess();
+                    ////////////GEEEET USER DETAILSSS ///////////
+                    StringRequest requestGetUserDetails = new StringRequest(Request.Method.POST, MyApplication.getUser_Details_Service_Tag(),
+                            new Response.Listener<String>() {
+                                @Override
+                                public void onResponse(String response) {
+                                    Log.d(TAG,"LoginActiivity => requestGetUserDetails STARTS with Response :" + response);
+
+                                    String str =  Html.fromHtml(response).toString();
+                                    JSONObject obj = null;
+                                    JSONArray jsonArray = null;
+
+                                    try {
+                                        jsonArray = new JSONArray(str);
+
+                                        for (int j = 0; j < jsonArray.length(); j++) {
+                                            JSONObject jsonObject = jsonArray.getJSONObject(j);
+                                            UserDetails userDetailsObject = new UserDetails();
+
+                                            String name = jsonObject.getString("name");
+                                            String surname = jsonObject.getString("surname");
+                                            String username = jsonObject.getString("username");
+                                            String passwd = jsonObject.getString("passwd");
+                                            int genderId = jsonObject.getInt("genderId");
+                                            String genderType = "Female";
+                                            if(genderId == 1)
+                                            {
+                                                genderType = "Male";
+                                            }
+
+                                            userDetailsObject.setName(name);
+                                            userDetailsObject.setSurname(surname);
+                                            userDetailsObject.setPasswd(passwd);
+                                            userDetailsObject.setUsername(username);
+                                            userDetailsObject.setGenderType(genderType);
+
+                                            Log.d(TAG,"LoginActivity => requestGetUserDetails getUser Name And Surname =>" + userDetailsObject.getName() + " " + userDetailsObject.getSurname() );
+
+
+                                            MyApplication.saveToPreferences(context, "logged_in", true);
+                                            MyApplication.saveToPreferences(context, "username", etEmail.getText().toString());
+
+                                            Gson gson = new Gson();
+
+                                            String userDetails = gson.toJson(userDetailsObject);
+
+                                            MyApplication.saveToPreferences(context,"userDetails",userDetails);
+
+                                            //MyApplication.saveToPreferences(context, "userID", result);
+                                            //Log.d(TAG, "  Registered User ID is : " +  MyApplication.readFromPreferences(context,"userID", -1));
+                                            Intent intent = new Intent(SignupActivity.this, MainActivity.class);
+                                            //MyApplication.createBundleSendingEmail(email, intent);
+                                            startActivity(intent);
+                                            onSignupSuccess();
+
+                                        }
+
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                }
+                            },
+                            new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+                                    Log.d(TAG,"REGISTERACITIVITY => requestGetUserDetails Error => " + error);
+                                }
+                            }){
+                        @Override
+                        protected Map<String, String> getParams() throws AuthFailureError {
+                            Map<String,String> params = new HashMap<String,String>();
+                            params.put("username",username);
+                            return params;
+                        }
+                    };
+
                 }
                 else
                     Toast.makeText(context,"Email already exist!!",Toast.LENGTH_SHORT).show();

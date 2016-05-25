@@ -29,6 +29,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+
 import java.util.Calendar;
 
 import it.neokree.materialtabs.MaterialTab;
@@ -41,6 +43,7 @@ import wiwiwi.io.wearwithweather.fragments.FragmentWeather;
 import wiwiwi.io.wearwithweather.network.VolleyApplication;
 import wiwiwi.io.wearwithweather.network.wiAlarmReceiver;
 import wiwiwi.io.wearwithweather.network.wiService;
+import wiwiwi.io.wearwithweather.pojo.UserDetails;
 
 
 public class MainActivity extends AppCompatActivity implements MaterialTabListener, View.OnClickListener {
@@ -67,7 +70,8 @@ public class MainActivity extends AppCompatActivity implements MaterialTabListen
     private FragmentDrawer mDrawerFragment;
     Context context;
     String currentLocation = "";
-    private String userGender = "Male";
+    private String userGender = "";
+    private String wiName,wiGender,wiSurname;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +80,22 @@ public class MainActivity extends AppCompatActivity implements MaterialTabListen
 
         setupTabs();
         setupDrawer();
+
+        //getting userdetails from SharedPreferences..
+        String userDetailsString = MyApplication.readFromPreferences(this,"userDetails",null);
+        Gson gson = new Gson();
+        UserDetails userDetails = gson.fromJson(userDetailsString,UserDetails.class);
+
+        Log.d(TAG,"userDetails from SP :" + userDetails.getUsername());
+
+        if(userDetails != null)
+        {
+
+            wiName = userDetails.getName();
+            wiSurname = userDetails.getSurname();
+            wiGender = userDetails.getGenderType();
+        }
+
         volleyApplication = VolleyApplication.getInstance();
         volleyApplication.init(getApplicationContext());
 
@@ -258,13 +278,13 @@ public class MainActivity extends AppCompatActivity implements MaterialTabListen
             Fragment fragment = null;
             switch (num) {
                 case TAB_HOME:
-                    fragment = FragmentWeather.newInstance(currentLocation, userGender);
+                    fragment = FragmentWeather.newInstance(currentLocation, wiGender);
                     break;
                 case TAB_USER:
                     fragment = FragmentProfile.newInstance("", "");
                     break;
                 case TAB_MENU:
-                    fragment = FragmentWear.newInstance(userGender,"");
+                    fragment = FragmentWear.newInstance(wiGender,"");
                     break;
 
             }

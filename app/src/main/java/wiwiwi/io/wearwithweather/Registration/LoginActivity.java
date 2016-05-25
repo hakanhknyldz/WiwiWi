@@ -17,7 +17,13 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.google.gson.Gson;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,6 +31,8 @@ import wiwiwi.io.wearwithweather.MainActivity;
 import wiwiwi.io.wearwithweather.MyApplication;
 import wiwiwi.io.wearwithweather.R;
 import wiwiwi.io.wearwithweather.network.VolleyApplication;
+import wiwiwi.io.wearwithweather.pojo.UserDetails;
+import wiwiwi.io.wearwithweather.pojo.wiClothes;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -35,6 +43,7 @@ public class LoginActivity extends AppCompatActivity {
     Button btnLogin;
     TextView tvLinkSignup;
     VolleyApplication volleyApplication = null;
+    String email = "",password = "";
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,7 +93,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void btnLogin_Click()
     {
-        final String email,password;
+
         email = etEmail.getText().toString();
         password = etPassword.getText().toString();
         if(!validate(email,password))
@@ -128,8 +137,69 @@ public class LoginActivity extends AppCompatActivity {
                 boolean result = Boolean.parseBoolean(str);
                 if(result)
                 {
-                    Toast.makeText(context,"Login Success!",Toast.LENGTH_SHORT).show();
-                    authentication();
+                    Toast.makeText(context,"Login Success!",Toast.LENGTH_LONG).show();
+////////////GEEEET USER DETAILSSS ///////////
+                    StringRequest requestGetUserDetails = new StringRequest(Request.Method.POST, MyApplication.getUser_Details_Service_Tag(),
+                            new Response.Listener<String>() {
+                                @Override
+                                public void onResponse(String response) {
+                                    Log.d(TAG,"LoginActiivity => requestGetUserDetails STARTS with Response :" + response);
+
+                                    String str =  Html.fromHtml(response).toString();
+                                    JSONObject obj = null;
+                                    JSONArray jsonArray = null;
+
+                                    try {
+                                        jsonArray = new JSONArray(str);
+
+                                        for (int j = 0; j < jsonArray.length(); j++) {
+                                            JSONObject jsonObject = jsonArray.getJSONObject(j);
+                                            UserDetails userDetails = new UserDetails();
+
+                                            String name = jsonObject.getString("name");
+                                            String surname = jsonObject.getString("surname");
+                                            String username = jsonObject.getString("username");
+                                            String passwd = jsonObject.getString("passwd");
+                                            int genderId = jsonObject.getInt("genderId");
+                                            String genderType = "Female";
+                                            if(genderId == 1)
+                                            {
+                                                genderType = "Male";
+                                            }
+
+                                            userDetails.setName(name);
+                                            userDetails.setSurname(surname);
+                                            userDetails.setPasswd(passwd);
+                                            userDetails.setUsername(username);
+                                            userDetails.setGenderType(genderType);
+
+                                            Log.d(TAG,"LoginActivity => requestGetUserDetails getUser Name And Surname =>" + userDetails.getName() + " " + userDetails.getSurname() );
+
+                                            authentication(userDetails);
+                                        }
+
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                }
+                            },
+                            new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+                                    Log.d(TAG,"LoginActiivity => requestGetUserDetails Error => " + error);
+                                }
+                            }){
+                        @Override
+                        protected Map<String, String> getParams() throws AuthFailureError {
+                            Map<String,String> params = new HashMap<String,String>();
+                            params.put("username",email);
+                            return params;
+                        }
+                    };
+
+
+
 
                 }
                 else
@@ -141,12 +211,24 @@ public class LoginActivity extends AppCompatActivity {
         };
     }
 
-    private void authentication()
+    private void authentication(UserDetails userDetailsObject)
     {
         //if login success
         btnLogin.setEnabled(true);
         MyApplication.saveToPreferences(context, "username", etEmail.getText().toString());
         MyApplication.saveToPreferences(context, "logged_in",true);
+
+
+        //save userDetails details object to sharedPreferences..
+        //we are using Gson.. it's convert object to string.. and string adding to SharedPreferences..
+        //it is awesome! :D
+
+        Gson gson = new Gson();
+        String userDetails = gson.toJson(userDetailsObject);
+
+        MyApplication.saveToPreferences(context,"userDetails",userDetails);
+
+
         Intent intent = new Intent(this,MainActivity.class);
         startActivity(intent);
     }
